@@ -1,4 +1,4 @@
-name: Python Package
+name: pygp
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.12.1'
 
     - name: Install dependencies
       run: |
