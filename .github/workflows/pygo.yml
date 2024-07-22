@@ -1,0 +1,40 @@
+name: Python Package
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [created]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest # windows-latest, macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+
+    - name: Build the package
+      run: |
+        python setup.py sdist bdist_wheel
+
+    - name: Publish to PyPI
+      if: github.event_name == 'release' || github.event.ref == 'refs/heads/main'
+      run: |
+        python -m pip install --upgrade pip
+        pip install twine
+        twine upload dist/*
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
