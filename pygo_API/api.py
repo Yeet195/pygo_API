@@ -76,7 +76,7 @@ class Image:
     BASEURL = BASEURL
     IMGURL = IMGURL
 
-    def __init__(self, IMGTYPE, name, save=None):
+    def __init__(self, IMGTYPE, name=None, save=None, fname=None):
         '''
         Initializes the APIImageLookUp instance with the specified image type and card name,
         and retrieves the card ID from the API.
@@ -87,8 +87,12 @@ class Image:
         self.save = save
         self.IMGTYPE = IMGTYPE
         self.name = name
+        self.fname = fname
         self.id = None
         self.IMGsuffix = None
+        
+        if self.name is None and self.fname is None:
+            raise ValueError("Either 'name' or 'fname' is required")
 
         if self.IMGTYPE == "normal":
             self.IMGsuffix = "cards"
@@ -100,7 +104,11 @@ class Image:
             self.IMGsuffix = "cards"
 
         # Construct the URL for fetching card data
-        self.url = f"{self.BASEURL}?name={name}"
+        if self.fname is not None:
+            self.url = f"{self.BASEURL}?fname={self.fname}"
+        else:
+            self.url = f"{self.BASEURL}?name={self.name}"
+        
         cached_data = Cache.get(self.url)
         if cached_data:
             data = cached_data
@@ -112,15 +120,19 @@ class Image:
             else:
                 raise ValueError(f"API request failed with status code {response.status_code}")
 
-        # Retrieve card ID based on name
+        # Retrieve card ID based on name or fname
         if 'data' in data:
             for item in data['data']:
-                if item['name'].lower() == name.lower():
+                card_name = item['name'].lower()
+                if self.name and card_name == self.name.lower():
                     self.id = item['id']
                     break
-
+                elif self.fname and self.fname.lower() in card_name:
+                    self.id = item['id']
+                    break
+                       
         if self.id is None:
-            raise ValueError(f"Card with name '{name}' not found.")
+            raise ValueError(f"Card with name '{self.name or self.fname}' not found.")
 
     def getImage(self, size='normal'):
         '''
@@ -154,7 +166,7 @@ class Image:
                     image_data = response.content
                     Cache.set(image_url, image_data)
                     if self.save:
-                        with open(f"{self.name}.jpg", 'wb') as f:
+                        with open(f"{self.name or self.fname}.jpg", 'wb') as f:
                             f.write(image_data)
                     return image_data
                 else:
