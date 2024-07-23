@@ -1,82 +1,32 @@
 import requests
 from .cache import Cache
-from .common import BASEURL, TYPEPARAMS, RACEPARAMS, LANGUAGEPARAMS, IMGURL
+from .common import BASEURL, TYPEPARAMS, RACEPARAMS, LANGUAGEPARAMS, IMGURL, ENDPOINTS
 
-class APILookUp:
+class Card:
     '''
     A class to interact with an API to look up card data based on various parameters.
     
     Attributes:
         BASEURL (str): The base URL for the API endpoint.
-        name (str, optional): The name of the card to look up.
-        fname (str, optional): The full name of the card to look up.
         url (str): The constructed URL for the API request.
         data (dict): The card data retrieved from the API or cache.
     
     Methods:
-        getData(): Returns the card data from the API response.
+        getData(fields=None): Returns the card data from the API response, with optional filtering of specific keys.
     '''
     
     BASEURL = BASEURL
 
-    def __init__(
-        self, 
-        name=None, 
-        type=None, 
-        race=None, 
-        language=None, 
-        archetype=None, 
-        level=None, 
-        attribute=None, 
-        banlist=None, 
-        cardset=None, 
-        fname=None, 
-        _format=None, 
-        linkmarker=None, 
-        misc=None, 
-        staple=None, 
-        startdate=None, 
-        enddate=None
-    ):
+    def __init__(self, **kwargs):
         '''
         Initializes the APILookUp instance with the provided parameters and constructs
         the URL for the API request.
-
         '''
+        self.url = f"{self.BASEURL}?"
         
-        self.name = name
-        self.fname = fname
-        self.url = f"{self.BASEURL}"
-        
-        # Dictionary to manage optional parameters
-        params: str = {
-            'type': type,
-            'race': race,
-            'language': language,
-            'archetype': archetype,
-            'level': level,
-            'attribute': attribute,
-            'banlist': banlist,
-            'cardset': cardset,
-            'fname': fname,
-            'format': _format,
-            'linkmarker': linkmarker,
-            'misc': misc,
-            'staple': staple,
-            'startdate': startdate,
-            'enddate': enddate
-        }
-        
-        # Construct the URL based on parameters
-        if self.name:
-            self.url = f"{self.url}?name={self.name}" 
-        elif self.fname:
-            self.url = f"{self.url}?fname={self.fname}" 
-        else:
-            self.url = f"{self.url}?"
-        
-        for key, value in params.items():
-            if value is not None:
+        # Construct the URL based on provided parameters
+        for key, value in kwargs.items():
+            if key in ENDPOINTS and value is not None:
                 if key in ['type', 'race', 'language']:
                     valid_values = {
                         'type': TYPEPARAMS,
@@ -96,22 +46,31 @@ class APILookUp:
             self.data = self.response.json()
             Cache.set(self.url, self.data)
 
-    def getData(self):
+    def getData(self, fields=None):
         '''
-        Retrieves the card data from the API response.
+        Retrieves the card data from the API response with optional filtering of specific keys.
+        
+        Args:
+            fields (list): A list of keys to include in the output. If None, returns all available data.
         
         Returns:
-            dict: The card data extracted from the API response.
+            dict: The card data extracted from the API response, filtered by specified keys.
         '''
-        return self.data["data"]
+        data = self.data.get("data", [])
+        if fields:
+            filtered_data = []
+            for item in data:
+                filtered_item = {key: item[key] for key in fields if key in item}
+                filtered_data.append(filtered_item)
+            return filtered_data
+        return data
 
-   
-class APIImageLookUp:
+class Image:
     '''
     A class to fetch and cache images of cards based on their name and image type.
     
     Methods:
-        getImage(): Retrieves the image of the card from the API or cache.
+        getImage(image_type='normal'): Retrieves the image of the card from the API or cache.
     '''
     
     BASEURL = BASEURL
@@ -126,8 +85,8 @@ class APIImageLookUp:
             ValueError: If the API request fails or the card is not found.
         '''
         self.save = save
-        self.IMGTYPE: str = IMGTYPE
-        self.name: str = name
+        self.IMGTYPE = IMGTYPE
+        self.name = name
         self.id = None
         self.IMGsuffix = None
 
@@ -163,10 +122,13 @@ class APIImageLookUp:
         if self.id is None:
             raise ValueError(f"Card with name '{name}' not found.")
 
-    def getImage(self):
+    def getImage(self, size='normal'):
         '''
-        Retrieves the image of the card from the API or cache.
+        Retrieves the image of the card from the API or cache based on the specified image size.
 
+        Args:
+            size (str): The size of the image to retrieve ('normal', 'small', 'cropped'). Defaults to 'normal'.
+        
         Returns:
             bytes: The image data of the card.
         
@@ -174,7 +136,15 @@ class APIImageLookUp:
             ValueError: If the image cannot be fetched or the card ID is not found.
         '''
         if self.id:
-            image_url = f"{self.IMGURL}/{self.IMGsuffix}/{self.id}.jpg"
+            if size == 'normal':
+                image_url = f"{self.IMGURL}/cards/{self.id}.jpg"
+            elif size == 'small':
+                image_url = f"{self.IMGURL}/cards_small/{self.id}.jpg"
+            elif size == 'cropped':
+                image_url = f"{self.IMGURL}/cards_cropped/{self.id}.jpg"
+            else:
+                raise ValueError("Invalid image size. Choose from 'normal', 'small', 'cropped'.")
+
             cached_image = Cache.get(image_url)
             if cached_image:
                 return cached_image
@@ -183,7 +153,7 @@ class APIImageLookUp:
                 if response.status_code == 200:
                     image_data = response.content
                     Cache.set(image_url, image_data)
-                    if self.save == True:
+                    if self.save:
                         with open(f"{self.name}.jpg", 'wb') as f:
                             f.write(image_data)
                     return image_data

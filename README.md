@@ -118,6 +118,20 @@ tcg = pygo_API.APILookUp(banlist="tcg", startdate="2020-01-01", enddate="2024-01
 
 Get all cards added to the tcg banlist between first of january 2020 and the first of january 2024
 
+```python
+tcg = pygo_API.Card(fname="snake-eye", sort="name").getData(fields=["name", "id"])
+
+print(tcg)
+```
+
+Print all "snake-eye" cards sortet by name and only show their name and id.
+
+```python
+print(pygo_API.Card(name="kuriboh").getData(fields=["desc"]))
+```
+
+Print out the card text of kuriboh
+
 ### Caching
 
 Every API request is cached for the duration of the program or script.

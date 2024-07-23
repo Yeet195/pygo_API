@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
-from .api import APIImageLookUp,APILookUp
+from .api import Image,Card
 from .cache import Cache
 from .common import *
 
