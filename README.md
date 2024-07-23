@@ -2,6 +2,10 @@
 
 Python Module to access the YGOProDeck API
 
+```bash
+pip install pygo-API==0.1.0
+```
+
 ## Params and API queries
 
 API queries:
