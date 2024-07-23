@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pygo_YGOProDeck_API_module',
-    version='1.0',
+    version='1.0.1',
     packages=find_packages(),
     install_requires=[
         "requests>=2.0"
