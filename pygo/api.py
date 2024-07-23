@@ -117,7 +117,7 @@ class APIImageLookUp:
     BASEURL = BASEURL
     IMGURL = IMGURL
 
-    def __init__(self, IMGTYPE, name):
+    def __init__(self, IMGTYPE, name, save=None):
         '''
         Initializes the APIImageLookUp instance with the specified image type and card name,
         and retrieves the card ID from the API.
@@ -125,6 +125,7 @@ class APIImageLookUp:
         Raises:
             ValueError: If the API request fails or the card is not found.
         '''
+        self.save = save
         self.IMGTYPE: str = IMGTYPE
         self.name: str = name
         self.id = None
@@ -182,6 +183,9 @@ class APIImageLookUp:
                 if response.status_code == 200:
                     image_data = response.content
                     Cache.set(image_url, image_data)
+                    if self.save == True:
+                        with open(f"{self.name}.jpg", 'wb') as f:
+                            f.write(image_data)
                     return image_data
                 else:
                     raise ValueError("Image could not be fetched.")
