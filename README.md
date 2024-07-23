@@ -2,6 +2,68 @@
 
 Python Module to access the YGOProDeck API
 
+## Params and API queries
+
+API queries:
+
+|query|usage|params|
+|---|---|---|
+|name|get card by string|string|
+|archetype|get cards of specific archetype|string|
+|level|get cards of specific level|int|
+|atribute|get cards of specific atribute|string|
+|banlist|only returns if card is on chosen banlist|string|
+|cardset|get cards from declared set|string|
+|fname|search card by partial name|string|
+|race|get cards of specific attribute|string|
+|format|get cards from chosen fromat|string|
+|linkmarker|filter by link markers|string|
+|misc|add YGOProDeck specific data to JSON dict|yes|
+|staple|show cards considered staple|yes|
+|startdate|exclude cards relesed before set date|yyyy-mm-dd|
+|enddate|exclude cards relesed after set date|yyyy-mm-dd|
+|type|filter by card type e.g. spell, counter trap|string|
+|language|get output in specified language|string|
+
+Params
+
+|type|race|language|
+|---|---|---|
+|Effect Monster|Aqua|fr|
+|Flip Effect Monster|Beast|de|
+|Flip Tuner Effect Monster|Beast-Warrior|it|
+|Gemini Monster|Creator-God|pt|
+|Normal Monster|Cybers||
+|Normal Tuner Monster|Dinosaur||
+|Pendulum Effect Monster|Divine-Beast||
+|Pendulum Effect Ritual Monster|Dragon||
+|Pendulum Flip Effect Monster|Fairy||
+|Pendulum Normal Monster|Fiend||
+|Pendulum Tuner Effect Monster|Fish||
+|Ritual Effect Monster|Insect||
+|Ritual Monster|Machine||
+|Spell Card|Plant||
+|Spirit Monster|Psychic||
+|Toon Monster|Pyro||
+|Trap Card|Reptile||
+|Tuner Monster|Rock||
+|Union Effect Monster|Sea Serpent||
+|Fusion Monster|Spellcaster||
+|Link Monster|Thunder||
+|Pendulum Effect Fusion Monster|Warrior||
+|Synchro Monster|Winged Beast||
+|Synchro Pendulum Effect Monster|Wyrm||
+|Synchro Tuner Monster|Zombie||
+|XYZ Monster|Normal||
+|XYZ Pendulum Effect Monster|Field||
+|Skill Card|Equip||
+|Token|Continuous||
+||Quick-Play||
+||Ritual||
+||Normal||
+||Continuous||
+||Counter||
+
 ## Usage
 
 ```python
