@@ -48,7 +48,7 @@ class Card:
             self.data = self.response.json()
             Cache.set(self.url, self.data)
 
-    def getData(self, fields=None):
+    def getData(self, fields: list[str]=None):
         '''
         Retrieves the card data from the API response with optional filtering of specific keys.
         
@@ -67,7 +67,7 @@ class Card:
             return filtered_data
         return data
     
-    def random(self, fields=None):
+    def random(self, fields: list[str]=None):
         '''
         Retrieves random card data from the API response with optional filtering of specific keys.
         
