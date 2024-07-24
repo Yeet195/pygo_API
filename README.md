@@ -4,7 +4,7 @@ Python Module to access the YGOProDeck API
 
 ## Instalation
 
-```bash
+```shell
 pip install pygo-API
 ```
 
