@@ -5,7 +5,7 @@ Python Module to access the YGOProDeck API
 ## Instalation
 
 ```bash
-pip install pygo-API==0.1.0
+pip install pygo-API
 ```
 
 ## YGOProDeck Params and API queries
