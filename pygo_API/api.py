@@ -13,9 +13,11 @@ class Card:
     
     Methods:
         getData(fields=None): Returns the card data from the API response, with optional filtering of specific keys.
+        random(fields=None): Returns random card data from the API response, with optional filtering of specific keys.
     '''
     
     BASEURL = BASEURL
+    RANDOMURL = "https://db.ygoprodeck.com/api/v7/randomcard.php"
 
     def __init__(self, **kwargs):
         '''
@@ -64,7 +66,31 @@ class Card:
                 filtered_data.append(filtered_item)
             return filtered_data
         return data
-
+    
+    def random(self, fields=None):
+        '''
+        Retrieves random card data from the API response with optional filtering of specific keys.
+        
+        Args:
+            fields (list): A list of keys to include in the output. If None, returns all available data.
+        
+        Returns:
+            dict: The random card data extracted from the API response, filtered by specified keys.
+        '''
+        # Check cache first
+        cached_data = Cache.get(self.RANDOMURL)
+        if cached_data:
+            data = cached_data
+        else:
+            response = requests.get(self.RANDOMURL)
+            data = response.json()
+            Cache.set(self.RANDOMURL, data)
+        
+        if fields:
+            filtered_data = {key: data[key] for key in fields if key in data}
+            return filtered_data
+        return data
+        
 class Image:
     '''
     A class to fetch and cache images of cards based on their name and image type.
