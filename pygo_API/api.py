@@ -26,6 +26,7 @@ class Card:
         '''
         self.url = f"{self.BASEURL}?"
         
+        
         # Construct the URL based on provided parameters
         for key, value in kwargs.items():
             if key in ENDPOINTS and value is not None:
@@ -174,14 +175,10 @@ class Image:
             ValueError: If the image cannot be fetched or the card ID is not found.
         '''
         if self.id:
-            if size == 'normal':
+            if size != True:
                 image_url = f"{self.IMGURL}/cards/{self.id}.jpg"
-            elif size == 'small':
-                image_url = f"{self.IMGURL}/cards_small/{self.id}.jpg"
-            elif size == 'cropped':
-                image_url = f"{self.IMGURL}/cards_cropped/{self.id}.jpg"
             else:
-                raise ValueError("Invalid image size. Choose from 'normal', 'small', 'cropped'.")
+                image_url = f"{self.IMGURL}/{size}/{self.id}.jpg"
 
             cached_image = Cache.get(image_url)
             if cached_image:
